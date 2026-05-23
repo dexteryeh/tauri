@@ -13,7 +13,7 @@ use crate::{
       },
     },
   },
-  error::ErrorExt,
+  error::{bail, ErrorExt},
   utils::{
     http_utils::{download_and_verify, verify_file_hash, HashAlgorithm},
     CommandExt,
@@ -657,7 +657,7 @@ fn build_nsis_app_installer(
   );
 
   let nsis_output_path = output_path.join(out_file);
-  let nsis_installer_path = settings.project_out_directory().to_path_buf().join(format!(
+  let nsis_installer_path = settings.project_out_directory().join(format!(
     "bundle/{}/{}.exe",
     if updater {
       NSIS_UPDATER_OUTPUT_FOLDER_NAME
@@ -690,7 +690,7 @@ fn build_nsis_app_installer(
   #[cfg(not(target_os = "windows"))]
   let mut nsis_cmd = Command::new("makensis");
 
-  nsis_cmd
+  let status = nsis_cmd
     .args(["-INPUTCHARSET", "UTF8", "-OUTPUTCHARSET", "UTF8"])
     .arg(match settings.log_level() {
       log::Level::Error => "-V1",
@@ -707,6 +707,9 @@ fn build_nsis_app_installer(
       command: "makensis.exe".to_string(),
       error,
     })?;
+  if !status.success() {
+    bail!("Failed to bundle app with makensis");
+  }
 
   fs::rename(nsis_output_path, &nsis_installer_path)?;
 
