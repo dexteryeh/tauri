@@ -1,0 +1,31 @@
+{
+  "name": "driftline-tauri",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "dev:open": "vite --host 127.0.0.1 --open",
+    "dev:lan": "vite --host 0.0.0.0",
+    "check": "tsc --noEmit",
+    "build": "npm run check && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "capture:still": "node scripts/capture.mjs still screenshots/still.png",
+    "capture:video": "node scripts/capture.mjs video screenshots/result/1 15",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
+  },
+  "dependencies": {
+    "@babylonjs/core": "^9.8.0",
+    "@babylonjs/loaders": "^9.8.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
+    "playwright-core": "^1.60.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.13"
+  }
+}

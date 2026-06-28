@@ -13,6 +13,7 @@ use crate::{
 use std::{
   collections::BTreeMap,
   env::current_dir,
+  fmt::Display,
   fs::{read_to_string, remove_dir_all},
   path::PathBuf,
 };
@@ -21,12 +22,39 @@ use crate::{
   error::{Context, ErrorExt},
   Result,
 };
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 use handlebars::{to_json, Handlebars};
 use include_dir::{include_dir, Dir};
 
-const TEMPLATE_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/templates/app");
+const RUST_TEMPLATE_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/templates/app");
+const PYTHON_TKINTER_TEMPLATE_DIR: Dir<'_> =
+  include_dir!("$CARGO_MANIFEST_DIR/templates/python-tkinter");
 const TAURI_CONF_TEMPLATE: &str = include_str!("../templates/tauri.conf.json");
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, ValueEnum)]
+enum Backend {
+  #[default]
+  Rust,
+  PythonTkinter,
+}
+
+impl Backend {
+  fn project_dir(self) -> &'static str {
+    match self {
+      Self::Rust => "src-tauri",
+      Self::PythonTkinter => "src-python",
+    }
+  }
+}
+
+impl Display for Backend {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    f.write_str(match self {
+      Self::Rust => "rust",
+      Self::PythonTkinter => "python-tkinter",
+    })
+  }
+}
 
 #[derive(Debug, Parser)]
 #[clap(about = "Initialize a Tauri project in an existing directory")]
@@ -47,13 +75,16 @@ pub struct Options {
   /// Path of the Tauri project to use (relative to the cwd)
   #[clap(short, long)]
   tauri_path: Option<PathBuf>,
+  /// Backend scaffold to generate
+  #[clap(long, value_enum, default_value_t = Backend::Rust)]
+  backend: Backend,
   /// Name of your Tauri application
   #[clap(short = 'A', long)]
   app_name: Option<String>,
   /// Window title of your Tauri application
   #[clap(short = 'W', long)]
   window_title: Option<String>,
-  /// Web assets location, relative to <project-dir>/src-tauri
+  /// Web assets location, relative to the generated backend directory
   #[clap(short = 'D', long)]
   frontend_dist: Option<String>,
   /// Url of your dev server
@@ -119,12 +150,21 @@ impl Options {
       )
     })?;
 
-    self.frontend_dist = self.frontend_dist.map(|s| Ok(Some(s))).unwrap_or_else(|| prompts::input(
-      r#"Where are your web assets (HTML/CSS/JS) located, relative to the "<current dir>/src-tauri/tauri.conf.json" file that will be created?"#,
-      init_defaults.framework.as_ref().map(|f| f.frontend_dist()),
-      self.ci,
-      false,
-    ))?;
+    self.frontend_dist = self.frontend_dist.map(|s| Ok(Some(s))).unwrap_or_else(|| {
+      prompts::input(
+        &format!(
+          "Where are your web assets (HTML/CSS/JS) located, relative to the generated \"{}\" directory?",
+          self.backend.project_dir()
+        ),
+        init_defaults.framework.as_ref().map(|f| f.frontend_dist()),
+        self.ci,
+        false,
+      )
+    })?;
+
+    if self.backend == Backend::PythonTkinter {
+      return Ok(self);
+    }
 
     self.dev_url = self.dev_url.map(|s| Ok(Some(s))).unwrap_or_else(|| {
       prompts::input(
@@ -190,16 +230,50 @@ fn default_build_command(pm: PackageManager) -> &'static str {
 pub fn command(mut options: Options) -> Result<()> {
   options = options.load()?;
 
-  let template_target_path = PathBuf::from(&options.directory).join("src-tauri");
-  let metadata = serde_json::from_str::<VersionMetadata>(include_str!("../metadata-v2.json"))
-    .context("failed to parse version metadata")?;
+  let template_target_path = PathBuf::from(&options.directory).join(options.backend.project_dir());
 
   if template_target_path.exists() && !options.force {
     log::warn!(
-      "Tauri dir ({:?}) not empty. Run `init --force` to overwrite.",
+      "Backend dir ({:?}) not empty. Run `init --force` to overwrite.",
       template_target_path
     );
   } else {
+    if options.backend == Backend::PythonTkinter {
+      if options.tauri_path.is_some() {
+        log::warn!("`--tauri-path` is only used by the Rust backend; ignoring it.");
+      }
+
+      let _ = remove_dir_all(&template_target_path);
+      let mut handlebars = Handlebars::new();
+      handlebars.register_escape_fn(handlebars::no_escape);
+
+      let mut data = BTreeMap::new();
+      data.insert(
+        "frontend_dist",
+        to_json(options.frontend_dist.as_deref().unwrap_or("../dist")),
+      );
+      data.insert(
+        "app_name",
+        to_json(options.app_name.as_deref().unwrap_or("Tauri App")),
+      );
+      data.insert(
+        "window_title",
+        to_json(options.window_title.as_deref().unwrap_or("Tauri")),
+      );
+
+      template::render(
+        &handlebars,
+        &data,
+        &PYTHON_TKINTER_TEMPLATE_DIR,
+        &options.directory,
+      )
+      .with_context(|| "failed to render Python/Tkinter template")?;
+      return Ok(());
+    }
+
+    let metadata = serde_json::from_str::<VersionMetadata>(include_str!("../metadata-v2.json"))
+      .context("failed to parse version metadata")?;
+
     let (tauri_dep, tauri_build_dep, tauri_utils_dep, tauri_plugin_dep) =
       if let Some(tauri_path) = &options.tauri_path {
         (
@@ -315,7 +389,7 @@ pub fn command(mut options: Options) -> Result<()> {
       to_json(serde_json::to_string_pretty(&config).unwrap()),
     );
 
-    template::render(&handlebars, &data, &TEMPLATE_DIR, &options.directory)
+    template::render(&handlebars, &data, &RUST_TEMPLATE_DIR, &options.directory)
       .with_context(|| "failed to render Tauri template")?;
   }
 

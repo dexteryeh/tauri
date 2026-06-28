@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iPhone React Python</title>
+    <style>:root {
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  background: #101116;
+  color: #f7f8fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.18), transparent 24rem),
+    linear-gradient(145deg, #111217, #2a2230 46%, #0d1015);
+}
+
+button {
+  font: inherit;
+}
+
+.scene {
+  min-height: 100vh;
+  display: block;
+}
+
+.desktop-surface {
+  width: 100vw;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(440px, 1.1fr);
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  column-gap: 42px;
+  background:
+    linear-gradient(128deg, rgba(255, 255, 255, 0.16), transparent 26%),
+    radial-gradient(circle at 74% 18%, rgba(119, 202, 255, 0.26), transparent 24rem),
+    radial-gradient(circle at 18% 86%, rgba(255, 115, 156, 0.24), transparent 22rem),
+    #171923;
+  padding: 56px 56px 118px;
+}
+
+.glance {
+  text-align: left;
+  justify-self: end;
+  width: min(360px, 100%);
+  padding: 0;
+}
+
+.date {
+  margin: 0;
+  color: rgba(247, 248, 251, 0.72);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0;
+  font-size: 92px;
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.status {
+  margin: 10px 0 0;
+  color: #d8f6ff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: min(360px, 100%);
+  justify-self: end;
+  align-self: start;
+  margin: 24px 0 0;
+}
+
+.quick-actions button,
+.dock button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  color: #f7f8fb;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(18px);
+  transition:
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+.quick-actions button:hover,
+.dock button:hover,
+.app-icon:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px 18px;
+  width: min(460px, 100%);
+  justify-self: start;
+  align-self: center;
+  grid-row: 1 / span 2;
+  grid-column: 2;
+}
+
+.app-icon {
+  border: 0;
+  color: #f7f8fb;
+  background: transparent;
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  min-width: 0;
+  transition: transform 160ms ease;
+}
+
+.glyph {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: #101116;
+  background: linear-gradient(145deg, #ffffff, #8be2ff);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.app-icon:nth-child(2n) .glyph {
+  background: linear-gradient(145deg, #fff0a8, #ff82a8);
+}
+
+.app-icon:nth-child(3n) .glyph {
+  background: linear-gradient(145deg, #b3ffd0, #62a9ff);
+}
+
+.app-label {
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dock {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 10px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(22px);
+  width: min(520px, calc(100vw - 112px));
+}
+
+@media (max-width: 420px) {
+  .desktop-surface {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 28px 24px 108px;
+    row-gap: 22px;
+  }
+
+  .glance,
+  .quick-actions,
+  .grid {
+    justify-self: center;
+  }
+
+  .glance {
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 68px;
+  }
+
+  .grid {
+    grid-column: auto;
+    grid-row: auto;
+    gap: 14px 10px;
+  }
+}
+</style>
+  </head>
+  <body>
+    <div id="root"><main class="scene"><section class="desktop-surface" aria-label="iOS style desktop window"><header class="glance"><p class="date">Saturday, June 27</p><h1>9:41</h1><p id="status" class="status">Ready</p></header><div class="quick-actions"><button onclick="focusMode()">Focus</button><button onclick="openCamera()">Camera</button></div><nav class="grid" aria-label="Apps"><button class="app-icon" onclick="openMessages()"><span class="glyph">M</span><span class="app-label">Messages</span></button><button class="app-icon" onclick="openCamera()"><span class="glyph">C</span><span class="app-label">Camera</span></button><button class="app-icon" onclick="openWallet()"><span class="glyph">W</span><span class="app-label">Wallet</span></button><button class="app-icon" onclick="focusMode()"><span class="glyph">F</span><span class="app-label">Focus</span></button><button class="app-icon" onclick="openCamera()"><span class="glyph">P</span><span class="app-label">Photos</span></button><button class="app-icon" onclick="focusMode()"><span class="glyph">M</span><span class="app-label">Maps</span></button><button class="app-icon" onclick="focusMode()"><span class="glyph">M</span><span class="app-label">Music</span></button><button class="app-icon" onclick="openMessages()"><span class="glyph">N</span><span class="app-label">Notes</span></button></nav><footer class="dock"><button onclick="openMessages()">Phone</button><button onclick="openMessages()">Safari</button><button onclick="openCamera()">Camera</button></footer></section></main></div>
+    <script>
+let phoneStatus = localStorage.getItem("phoneStatus") || "Ready";
+document.getElementById("status").innerHTML = phoneStatus;
+
+function focusMode() {
+  phoneStatus = "Focus on";
+  localStorage.setItem("phoneStatus", phoneStatus);
+  document.getElementById("status").innerHTML = localStorage.getItem("phoneStatus");
+}
+
+function openCamera() {
+  phoneStatus = "Camera ready";
+  localStorage.setItem("phoneStatus", phoneStatus);
+  document.getElementById("status").innerHTML = localStorage.getItem("phoneStatus");
+}
+
+function openMessages() {
+  phoneStatus = "Messages open";
+  localStorage.setItem("phoneStatus", phoneStatus);
+  document.getElementById("status").innerHTML = localStorage.getItem("phoneStatus");
+}
+
+function openWallet() {
+  phoneStatus = "Wallet ready";
+  localStorage.setItem("phoneStatus", phoneStatus);
+  document.getElementById("status").innerHTML = localStorage.getItem("phoneStatus");
+}
+</script>
+  </body>
+</html>

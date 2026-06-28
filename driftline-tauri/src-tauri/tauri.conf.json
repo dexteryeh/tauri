@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Driftline",
+  "version": "0.1.0",
+  "identifier": "com.dexter.driftline",
+  "build": {
+    "beforeDevCommand": "npm run dev -- --port 5175",
+    "beforeBuildCommand": "npm run build",
+    "devUrl": "http://127.0.0.1:5175",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Driftline",
+        "width": 1280,
+        "height": 720,
+        "minWidth": 960,
+        "minHeight": 540,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": []
+  }
+}

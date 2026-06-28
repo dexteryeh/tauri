@@ -1,0 +1,8 @@
+.agents
+AGENTS.md
+.codex
+/node_modules
+/dist
+/screenshots
+.capture
+.babylon-help.log

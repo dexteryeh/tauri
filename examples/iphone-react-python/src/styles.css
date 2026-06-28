@@ -1,0 +1,200 @@
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  background: #101116;
+  color: #f7f8fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.18), transparent 24rem),
+    linear-gradient(145deg, #111217, #2a2230 46%, #0d1015);
+}
+
+button {
+  font: inherit;
+}
+
+.scene {
+  min-height: 100vh;
+  display: block;
+}
+
+.desktop-surface {
+  width: 100vw;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(440px, 1.1fr);
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  column-gap: 42px;
+  background:
+    linear-gradient(128deg, rgba(255, 255, 255, 0.16), transparent 26%),
+    radial-gradient(circle at 74% 18%, rgba(119, 202, 255, 0.26), transparent 24rem),
+    radial-gradient(circle at 18% 86%, rgba(255, 115, 156, 0.24), transparent 22rem),
+    #171923;
+  padding: 56px 56px 118px;
+}
+
+.glance {
+  text-align: left;
+  justify-self: end;
+  width: min(360px, 100%);
+  padding: 0;
+}
+
+.date {
+  margin: 0;
+  color: rgba(247, 248, 251, 0.72);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0;
+  font-size: 92px;
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.status {
+  margin: 10px 0 0;
+  color: #d8f6ff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: min(360px, 100%);
+  justify-self: end;
+  align-self: start;
+  margin: 24px 0 0;
+}
+
+.quick-actions button,
+.dock button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  color: #f7f8fb;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(18px);
+  transition:
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+.quick-actions button:hover,
+.dock button:hover,
+.app-icon:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px 18px;
+  width: min(460px, 100%);
+  justify-self: start;
+  align-self: center;
+  grid-row: 1 / span 2;
+  grid-column: 2;
+}
+
+.app-icon {
+  border: 0;
+  color: #f7f8fb;
+  background: transparent;
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  min-width: 0;
+  transition: transform 160ms ease;
+}
+
+.glyph {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: #101116;
+  background: linear-gradient(145deg, #ffffff, #8be2ff);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.app-icon:nth-child(2n) .glyph {
+  background: linear-gradient(145deg, #fff0a8, #ff82a8);
+}
+
+.app-icon:nth-child(3n) .glyph {
+  background: linear-gradient(145deg, #b3ffd0, #62a9ff);
+}
+
+.app-label {
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dock {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 10px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(22px);
+  width: min(520px, calc(100vw - 112px));
+}
+
+@media (max-width: 420px) {
+  .desktop-surface {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 28px 24px 108px;
+    row-gap: 22px;
+  }
+
+  .glance,
+  .quick-actions,
+  .grid {
+    justify-self: center;
+  }
+
+  .glance {
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 68px;
+  }
+
+  .grid {
+    grid-column: auto;
+    grid-row: auto;
+    gap: 14px 10px;
+  }
+}
